@@ -11,8 +11,8 @@ left_channel, right_channel = data[:,0], data[:,1]
 #print(len(left_channel))
 frame_size = 1024
 iterations = len(left_channel)//frame_size
-print(frame_size)
-print(iterations)
+#print(frame_size)
+#print(iterations)
 database = {}
 
 
@@ -27,7 +27,7 @@ def get4points(sample, lst):
         index = getIndex(freq, lst)
         value = log(abs(freq) + 1)
         if index is not None and results[index] < value:
-             results[index] = round(value, 2)
+             results[index] = round(value, 0)
     return results
    
 def createHash(inp, fuz):
@@ -39,7 +39,6 @@ bins = [[40, 80], [80, 120], [120, 180], [180, 300]]
 
 for i in range(iterations):
     if int((i+1)*frame_size) > len(left_channel):
-        print(int((i)*frame_size))
         chunk = fft(left_channel[int((i)*frame_size) : len(left_channel)])
         chunk = chunk[0:len(chunk)//2]
     else:
@@ -47,9 +46,10 @@ for i in range(iterations):
         chunk = chunk[0:len(chunk)//2]
 
     tf = get4points(chunk, bins)
-    print(tf)
-    tag = createHash(tf, 2)
-    print(tag)
+    #print(tf)
+    #tag = createHash(tf, 2)
+    tag = hash(sum(tf))
+    #print(tag)
     database[tag] = [i, name]
 
 print("done")
@@ -68,7 +68,8 @@ def check(inp, library, lst):
             bit = fft(inp[int(i*size) : int((i+1)*size)])
             bit = bit[0:len(bit)//2]
 
-        tag = createHash(get4points(bit, lst), 2)
+        #tag = createHash(get4points(bit, lst), 2)
+        tag = hash(sum(get4points(bit, lst)))
 
         if tag in library:
             time, name = library[tag]
@@ -83,9 +84,20 @@ def check(inp, library, lst):
             for y in range(len(mat_lst)):
                 start_test, start_artist = mat_lst[x]
                 end_test, end_artist = mat_lst[y]
-                if end_artist-start_artist == end_test-start_test:
+                dtest = end_test-start_test
+                dartist = end_artist-start_artist
+                #print(dtest)
+                #print(dartist)
+                if dtest == dartist:
                     results += 1
-        print(str((results/len(mat_lst)**2)*100) + "% match with artist" + artist)
+                    #print(dtest)
+                    #print(dartist)
+        #print(mat_lst)
+        #print(str((results/len(mat_lst)**2)*100) + "% match with artist" + artist)
+        if results >= 30:
+            print("it's a match with an artist!")
+        else:
+            print("Cannot find match!")
 
 ### UNIT TEST ###
 
