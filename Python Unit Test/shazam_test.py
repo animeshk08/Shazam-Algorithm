@@ -1,48 +1,75 @@
 import matplotlib.pyplot as plt
 from scipy.fftpack import fft
 from scipy.io import wavfile
+from math import log
+
 
 
 sample_rate, data = wavfile.read('sample.wav')
 name = "sample.wav"
 left_channel, right_channel = data[:,0], data[:,1]
 #print(len(left_channel))
-#frame_size = len(left_channel) / 4
-frame_size = 500
-iterations = len(left_channel)//frame_size + 1
+frame_size = 1024
+iterations = len(left_channel)//frame_size
 print(frame_size)
 print(iterations)
 database = {}
 
+
+def getIndex(value, lst):
+    for j in range(len(lst)):
+        if lst[j][0] <= value and lst[j][1] >= value:
+            return j
+
+def get4points(sample, lst):
+    results = [0,0,0,0]
+    for freq in sample:
+        index = getIndex(freq, lst)
+        value = log(abs(freq) + 1)
+        if index is not None and results[index] < value:
+             results[index] = round(value, 2)
+    return results
+   
+def createHash(inp, fuz):
+    return (inp[3]-(inp[3]%fuz))* 100000000 + (inp[2]-(inp[2]%fuz))* 100000 + (inp[1]-(inp[1]%fuz))* 100 + (inp[0]-(inp[0]%fuz))
+
+bins = [[40, 80], [80, 120], [120, 180], [180, 300]]
+
+
+
 for i in range(iterations):
     if int((i+1)*frame_size) > len(left_channel):
+        print(int((i)*frame_size))
         chunk = fft(left_channel[int((i)*frame_size) : len(left_channel)])
+        chunk = chunk[0:len(chunk)//2]
     else:
         chunk = fft(left_channel[int((i)*frame_size) : int((i+1)*frame_size)])
-    #print(chunk)
-    print(max(chunk, key=abs))
-    #print(i)
-    tag = hash(max(chunk, key=abs))
-    #print(tag)
+        chunk = chunk[0:len(chunk)//2]
+
+    tf = get4points(chunk, bins)
+    print(tf)
+    tag = createHash(tf, 2)
+    print(tag)
     database[tag] = [i, name]
 
 print("done")
 
 
 
-def check(inp, length, library):
-    size = 500
+def check(inp, library, lst):
+    size = 1024
+    iterations = len(inp)//size
     matches = {}
-    for i in range(length):
+    for i in range(iterations):
         if int((i+1)* size) > len(inp):
             bit = fft(inp[int(i*size) : len(inp)])
+            bit = bit[0:len(bit)//2]
         else:
             bit = fft(inp[int(i*size) : int((i+1)*size)])
-        #print(bit)
-        print(max(bit, key=abs))
-        #print(i)
-        tag = hash(max(bit, key=abs))
-        #print(tag)
+            bit = bit[0:len(bit)//2]
+
+        tag = createHash(get4points(bit, lst), 2)
+
         if tag in library:
             time, name = library[tag]
             if name not in matches:
@@ -65,16 +92,16 @@ def check(inp, length, library):
 # Indentical File
 test_rate, test_data = wavfile.read("test.wav")
 lc, rc = test_data[:,0], test_data[:,0]
-#check(lc, len(lc)//500 + 1, database)
+check(lc, database, bins)
 
 # Cut File
 test_rate, test_data = wavfile.read("test1.wav")
 lc, rc = test_data[:,0], test_data[:,0]
-#check(lc, len(lc)//500 + 1, database)
+check(lc, database, bins)
 
 test_rate, test_data = wavfile.read("test2.wav")
 lc, rc = test_data[:,0], test_data[:,0]
-check(lc, len(lc)//500 + 1, database)
+check(lc, database, bins)
 
 ### Need to add, for whatever song, get sample rate and apply it to duration for testing
 
