@@ -52,6 +52,30 @@ for i in range(iterations):
     #print(tag)
     database[tag] = [i, name]
 
+sample_rate, data = wavfile.read('other.wav')
+name = "other.wav"
+left_channel, right_channel = data[:,0], data[:,1]
+#print(len(left_channel))
+frame_size = 1024
+iterations = len(left_channel)//frame_size
+#print(frame_size)
+#print(iterations)
+
+for i in range(iterations):
+    if int((i+1)*frame_size) > len(left_channel):
+        chunk = fft(left_channel[int((i)*frame_size) : len(left_channel)])
+        chunk = chunk[0:len(chunk)//2]
+    else:
+        chunk = fft(left_channel[int((i)*frame_size) : int((i+1)*frame_size)])
+        chunk = chunk[0:len(chunk)//2]
+
+    tf = get4points(chunk, bins)
+    #print(tf)
+    #tag = createHash(tf, 2)
+    tag = hash(sum(tf))
+    #print(tag)
+    database[tag] = [i, name]
+
 print("done")
 
 
@@ -88,13 +112,14 @@ def check(inp, library, lst):
                 dartist = end_artist-start_artist
                 #print(dtest)
                 #print(dartist)
-                if dtest == dartist:
+                if dtest == dartist and dtest != 0 and dartist != 0:
                     results += 1
                     #print(dtest)
                     #print(dartist)
+        print(results)
         #print(mat_lst)
         #print(str((results/len(mat_lst)**2)*100) + "% match with artist" + artist)
-        if results >= 30:
+        if results >= 50:
             print("it's a match with an artist!")
         else:
             print("Cannot find match!")
@@ -102,20 +127,31 @@ def check(inp, library, lst):
 ### UNIT TEST ###
 
 # Indentical File
+print("indentical file")
 test_rate, test_data = wavfile.read("test.wav")
 lc, rc = test_data[:,0], test_data[:,0]
 check(lc, database, bins)
 
 # Cut File
+
+#start to cut
+print("cut file")
 test_rate, test_data = wavfile.read("test1.wav")
 lc, rc = test_data[:,0], test_data[:,0]
 check(lc, database, bins)
 
+#cut to end
 test_rate, test_data = wavfile.read("test2.wav")
 lc, rc = test_data[:,0], test_data[:,0]
 check(lc, database, bins)
 
-### Need to add, for whatever song, get sample rate and apply it to duration for testing
+#New Random file
+print("other file")
+test_rate, test_data = wavfile.read("test3.wav")
+lc, rc = test_data[:,0], test_data[:,0]
+check(lc, database, bins)
+
+
 
 
 
