@@ -10,8 +10,8 @@ public class Music {
     private Clip sound;
  
     public Music(String filename) {
-        name = filename;
-        Clip sound = loadClip(filename);
+        this.name = filename;
+        this.sound = loadClip(filename);
     }
     
     public Clip loadClip( String filename ) {
@@ -23,7 +23,7 @@ public class Music {
         } catch( Exception e ) {
             e.printStackTrace();
         }
-        return in;
+        return sample;
     }
     
     public String getName() {
