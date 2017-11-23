@@ -8,8 +8,19 @@ public final class Main {
      public final int[] bins = new int[] { 40, 80, 120, 180, 300 };
 
      public static void main(String[] args) {
+	 check();
+	
 
 
+     }
+
+     public void check(List<int> input, Hashmap<long, List<List<int>>>, int[] ranges) {
+         int size = 1024;
+	 int iterations = input.length;
+	 Hashmap<long, List<List<int>>> matches = new Hashmap();
+	 for(int i = 0; i <= iterations; i++) {
+	     
+	 }
 
      }
 
