@@ -178,7 +178,7 @@ public class FFT {
     *
     ***************************************************************************/
 
-    public static void main(String[] args) { 
+/***    public static void main(String[] args) { 
         int n = Integer.parseInt(args[0]);
         Complex[] x = new Complex[n];
 
@@ -204,7 +204,7 @@ public class FFT {
         // linear convolution of x with itself
         Complex[] d = convolve(x, x);
         show(d, "d = convolve(x, x)");
-    }
+    }***/
 
 }
 

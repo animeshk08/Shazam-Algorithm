@@ -6,17 +6,18 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.HashMap;
 
 
 public class Database {
 
-     private Hashmap<> Library;
+     private Hashmap<String, Music> Library;
      private Hashmap<long, Data> DataLibrary;
      private static final int hash_factor = 2;
      public final int[] bins = new int[] { 40, 80, 120, 180, 300 };  
 
      public static void main(String[] args) {
-         library = new Hashmap<String, Music>()
+         library = new Hashmap<String, Music>();
          /*** 1) load in music from txt file**/
          /*** 2) Fingerprint song into other database***/ 
 	 try {
@@ -30,7 +31,6 @@ public class Database {
 		 fingerprint(track);
 	         System.out.println(line);
 	     }
-
 	     fileReader.close();
 	     System.out.println("Finished loading for TrackList.txt");
          } catch (IOException e) {
@@ -44,7 +44,9 @@ public class Database {
          int size = 1024;
 	 int iterations = track.getFrameLength();
          for(int i = 0; i < iterations; i+=size) {
-	         
+	     Complex[] chunk = fft();
+	     long hashcode = hash();
+	     Datalibrary.put(hashcode, new Data(song.getName(), hashcode, i));
 	 }
      }
 

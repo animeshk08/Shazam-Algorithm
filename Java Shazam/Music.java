@@ -14,10 +14,10 @@ public class Music {
         this.sound = loadClip(filename);
     }
     
-    public Clip loadClip( String filename ) {
+    public Clip loadClip(String filename) {
         Clip sample = null;
         try {
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream( getClass().getResource( filename ) );
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResource(filename));
             sample = AudioSystem.getClip();
             sample.open( audioIn );
         } catch( Exception e ) {
